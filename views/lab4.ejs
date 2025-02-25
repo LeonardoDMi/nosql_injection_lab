@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lab 4 - Flag Check</title>
+  </head>
+  <body>
+    <h1>Lab 4 - Flag Check</h1>
+    <form id="flagForm">
+      <label for="flag">Flag:</label>
+      <input type="text" id="flag" name="flag" required /><br /><br />
+      <button type="submit">Check Flag</button>
+    </form>
+    <div id="message"></div>
+
+    <script>
+      const form = document.getElementById("flagForm");
+      const messageDiv = document.getElementById("message");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+
+        try {
+          const response = await fetch("/api/lab4/checkFlag", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          const result = await response.json();
+
+          messageDiv.textContent = result.message;
+          messageDiv.style.color = result.success ? "green" : "red";
+        } catch (err) {
+          messageDiv.textContent = "Error during flag check.";
+          messageDiv.style.color = "red";
+        }
+      });
+    </script>
+  </body>
+</html>

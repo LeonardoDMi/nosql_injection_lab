@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lab 3 - Login $where Injection</title>
+  </head>
+  <body>
+    <h1>Lab 3 - Login $where Injection</h1>
+    <form id="loginForm">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required /><br /><br />
+      <label for="password">Password:</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        required
+      /><br /><br />
+      <button type="submit">Login</button>
+    </form>
+    <div id="message"></div>
+    <div id="userDetails"></div>
+
+    <script>
+      const form = document.getElementById("loginForm");
+      const messageDiv = document.getElementById("message");
+      const userDetailsDiv = document.getElementById("userDetails");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+
+        try {
+          const response = await fetch("/api/lab3/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            messageDiv.textContent = `Login successful!`;
+            messageDiv.style.color = "green";
+
+            userDetailsDiv.innerHTML = `
+            <h2>Dettagli Utente:</h2>
+            <pre>${JSON.stringify(result.user, null, 2)}</pre>
+          `;
+          } else {
+            messageDiv.textContent = result.message;
+            messageDiv.style.color = "red";
+            userDetailsDiv.innerHTML = "";
+          }
+        } catch (err) {
+          messageDiv.textContent = "Error during login.";
+          messageDiv.style.color = "red";
+          userDetailsDiv.innerHTML = "";
+        }
+      });
+    </script>
+  </body>
+</html>

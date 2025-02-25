@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lab 2 - Product Search</title>
+  </head>
+  <body>
+    <h1>Lab 2 - Product Search</h1>
+    <form id="searchForm">
+      <input
+        type="text"
+        id="search"
+        name="search"
+        placeholder="Product Search"
+      />
+      <input type="checkbox" id="instock" name="instock" /> In Stock
+      <button type="submit">Search</button>
+    </form>
+    <div id="products"></div>
+
+    <script>
+      const form = document.getElementById("searchForm");
+      const productsDiv = document.getElementById("products");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const search = document.getElementById("search").value;
+        const instock = document.getElementById("instock").checked;
+
+        const query = [
+          {
+            $match: {
+              $and: [
+                { name: { $regex: `^${search}`, $options: "i" } },
+                { inStock: instock },
+              ],
+            },
+          },
+        ];
+
+        try {
+          const response = await fetch("/api/lab2/products", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(query),
+          });
+
+          const products = await response.json();
+
+          productsDiv.innerHTML = "<h2>Results:</h2>";
+          if (products.length === 0) {
+            productsDiv.innerHTML += "<p>No products found.</p>";
+          } else {
+            products.forEach((product) => {
+              productsDiv.innerHTML += `
+              <div>
+                <h3>${product.name}</h3>
+                <p>Price: ${product.price}</p>
+                <p>In Stock: ${product.instock ? "Yes" : "No"}</p>
+              </div>
+            `;
+            });
+          }
+        } catch (err) {
+          productsDiv.innerHTML = "<p>Error during search.</p>";
+        }
+      });
+    </script>
+  </body>
+</html>

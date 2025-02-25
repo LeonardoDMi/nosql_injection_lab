@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Challenges</title>
+  </head>
+  <body>
+    <h1>Challenges</h1>
+    <ul>
+      <% challenges.forEach(challenge => { %>
+      <li><a href="/<%= challenge %>"><%= challenge %></a></li>
+      <% }); %>
+    </ul>
+  </body>
+</html>
